@@ -1,1 +1,1 @@
-module goopenai
+module github.com/Pastir/goopenai
