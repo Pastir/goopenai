@@ -61,7 +61,7 @@ type (
 		Function *Function `json:"function"`
 	}
 
-	CreateChatCompletions struct {
+	ChatCompletions struct {
 		// Required
 		Messages []Message `json:"messages"`
 
@@ -146,3 +146,8 @@ type (
 		Usage             UsageResponse     `json:"usage"`
 	}
 )
+
+func (c *ChatCompletions) Create() ([]byte, error) {
+	var s []byte
+	return s, nil
+}
