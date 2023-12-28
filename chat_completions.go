@@ -1,5 +1,7 @@
 package goopenai
 
+import "net/http"
+
 const (
 	RoleAssistant = "assistant"
 	RoleUser      = "user"
@@ -61,6 +63,10 @@ type (
 		Function *Function `json:"function"`
 	}
 
+	ResponseFormat struct {
+		Type string `json:"type,omitempty"`
+	}
+
 	ChatCompletions struct {
 		// Required
 		Messages []Message `json:"messages"`
@@ -90,10 +96,7 @@ type (
 		PresencePenalty int `json:"presence_penalty,omitempty"`
 
 		// Optional
-		ResponseFormat struct {
-			// Optional
-			Type string `json:"type,omitempty"`
-		} `json:"response_format,omitempty"`
+		ResponseFormat *ResponseFormat `json:"response_format,omitempty"`
 
 		// Optional
 		Seed int `json:"seed,omitempty"`
@@ -111,7 +114,7 @@ type (
 		TopP int `json:"topP,omitempty"`
 
 		// Optional
-		Tools []Tool `json:"tools"`
+		Tools []Tool `json:"tools,omitempty"`
 
 		// Optional need implementation
 		ToolChoice interface{} `json:"tool_choice,omitempty"`
@@ -147,7 +150,32 @@ type (
 	}
 )
 
+func (c *ChatCompletions) ResponseStruct() OpenAIResponse {
+	var chr *ChatCompletionsResponse = &ChatCompletionsResponse{}
+	return chr
+}
+
 func (c *ChatCompletions) Create() ([]byte, error) {
 	var s []byte
 	return s, nil
+}
+
+func (c *ChatCompletions) GetEndpoint() string {
+	return endpointChatCompletions
+}
+
+func (c *ChatCompletions) GetMethod() string {
+	return http.MethodPost
+}
+
+func (c *ChatCompletionsResponse) GetContent() []string {
+	var strContent []string
+	for _, v := range c.Choices {
+		strContent = append(strContent, v.Messages.Content)
+	}
+	return strContent
+}
+
+func (c *ChatCompletionsResponse) GetTotalTokens() int {
+	return c.Usage.TotalTokens
 }
